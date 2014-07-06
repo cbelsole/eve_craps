@@ -1,0 +1,30 @@
+template(name="user")
+  .row.col-md-12.text-center
+    form(id="user-edit-form" action="action")
+      .row.col-md-12.text-center
+        h1 Eve Craps
+      .row
+        .col-md-6.text-center
+          h2 Profile Info
+          label
+            | Username
+            input(type="text" id="username" placeholder="username" value="#{username}")
+          br
+          label
+            | Email
+            input(type="text" id="email" placeholder="email" value="{{emails.[0].address}}")
+          br
+          label
+            | Character
+            input(type="text" id="character" placeholder="character name" value="#{profile.character}")
+        .col-md-6.text-center
+          h2 Password Info
+          label
+            | Password
+            input(type="password" id="password" placeholder="password")
+          br
+          label
+            | Old Password
+            input(type="password" id="oldPassword" placeholder="old password")
+      input.btn.btn-default(type="submit" value="edit")
+      a(href="{{pathFor 'game'}}")

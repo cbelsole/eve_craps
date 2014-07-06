@@ -1,0 +1,20 @@
+template(name="user_sign_up")
+  .row
+    .col-md-12.text-center
+      h1 Eve Craps
+      form(id="sign-up-form" action="action")
+        input(type="text" id="username" placeholder="username")
+        br
+        input(type="text" id="email" placeholder="email")
+        br
+        input(type="text" id="confirm_email" placeholder="confirm email")
+        br
+        input(type="password" id="password" placeholder="password")
+        br
+        input(type="password" id="confirm_password" placeholder="confirm password")
+        br
+        input(type="text" id="character" placeholder="character name")
+        .row
+          .col-md-12
+            input.btn.btn-default(type="submit" value="Sign up")
+            a(href="{{pathFor 'user_sign_up'}}")

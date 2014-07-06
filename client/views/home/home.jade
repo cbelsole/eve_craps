@@ -1,0 +1,21 @@
+template(name="home")
+  .row
+    .col-md-12.text-center
+      h1 Eve Craps
+      form(id="login-form" action="action")
+        input(type="text" id="login" name="login" placeholder="login")
+        br
+        input(type="password" id="password" placeholder="password" name="password")
+        br
+        label
+          //- implement this
+          | Remember me?
+          input(type="checkbox" name="remember_me")
+        .row
+          .col-md-12
+            input.btn.btn-default(type="submit" value="Sign in")
+            a(href="{{pathFor 'user_sign_up'}}")
+              button.btn.btn-default(type="button") Sign up
+              //- this is not very jaded but it is what works for now
+              //- https://github.com/mquandalle/meteor-jade/issues/10
+

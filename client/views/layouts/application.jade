@@ -1,0 +1,14 @@
+template(name="application")
+  header
+    +header
+  .container
+    if currentUser
+      a#edit(href='#') Edit
+      | /
+      a#sign-out(href='#') Sign out
+    +yield
+    .row.col-md-12.text-center
+      ul#error.bg-danger
+      ul#success.bg-success
+  footer
+    +footer
