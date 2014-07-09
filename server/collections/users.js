@@ -1,3 +1,10 @@
+Accounts.onCreateUser(function (options, user) {
+  if(options.profile) {
+    options.profile.money = 0;
+    user.profile = options.profile;
+  }
+});
+
 Meteor.methods({
   saveUser: function (userId, options) {
     if(!(userId === this.userId)) {
