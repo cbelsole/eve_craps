@@ -1,5 +1,12 @@
+/*****************************************************************************/
+/* Client and Server Routes */
+/*****************************************************************************/
 Router.configure({
   layoutTemplate: 'application',
+  loadingTemplate: 'Loading',
+  notFoundTemplate: 'NotFound',
+  templateNameConverter: 'upperCamelCase',
+  routeControllerNameConverter: 'upperCamelCase',
   onBeforeAction: function () {
     clearErrors();
     clearSuccess();
