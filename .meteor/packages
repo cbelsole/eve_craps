@@ -9,8 +9,8 @@ insecure
 jade
 jquery
 less
-less-bootstrap-3
 font-awesome-4-less
 accounts-base
 accounts-password
 iron-router
+bootstrap

@@ -16,18 +16,18 @@ Template.application.events({
   }
 });
 
-Template.MasterLayout.helpers({
+Template.application.helpers({
 
 });
 
 /*****************************************************************************/
 /* MasterLayout: Lifecycle Hooks */
 /*****************************************************************************/
-Template.MasterLayout.created = function () {
+Template.application.created = function () {
 };
 
-Template.MasterLayout.rendered = function () {
+Template.application.rendered = function () {
 };
 
-Template.MasterLayout.destroyed = function () {
+Template.application.destroyed = function () {
 };
