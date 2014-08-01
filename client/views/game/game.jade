@@ -1,6 +1,15 @@
 template(name="game")
   .container
     .row
-      .col-xs-4 game list placeholder
+      .col-xs-4
+        input.game-name
+        button.create-game create
+        ol
+          | Available Games
+          .no-games No Games
+          each games
+            li
+              = name
+              button.remove-game remove
       .col-xs-4 game board placeholder
       .col-xs-4 chat client placeholder
