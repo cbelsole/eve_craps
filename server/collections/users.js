@@ -3,6 +3,7 @@ Accounts.onCreateUser(function (options, user) {
     options.profile.money = 0;
     user.profile = options.profile;
   }
+  return user;
 });
 
 Meteor.methods({
