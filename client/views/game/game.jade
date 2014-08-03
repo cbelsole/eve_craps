@@ -1,15 +1,23 @@
 template(name="game")
   .container
     .row
-      .col-xs-4
+      .col-xs-2
         input.game-name
         button.create-game create
-        ol
+        ol.list-unstyled.game-list
           | Available Games
           .no-games No Games
           each games
-            li
-              = name
-              button.remove-game remove
-      .col-xs-4 game board placeholder
+            li.game-tile
+              +game_tile
+
+      .col-xs-6 game board placeholder
       .col-xs-4 chat client placeholder
+
+template(name="game_tile")
+  div(id=_id)
+    div= name
+    div
+      | players
+      = players.length
+    button.remove-game remove

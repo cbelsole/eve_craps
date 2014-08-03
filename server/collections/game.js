@@ -21,7 +21,7 @@ Game.allow({
 
 Game.deny({
   insert: function (userId, doc) {
-    return ParamValidator.isEmpty(doc.name) && ParamValidator.isEmpty(doc.host);
+    return ParamValidator.isEmpty(doc.name) || ParamValidator.isEmpty(doc.host);
   },
 
   update: function (userId, doc, fieldNames, modifier) {
