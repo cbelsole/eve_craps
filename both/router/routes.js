@@ -15,7 +15,7 @@ Router.configure({
 
 Router.map(function () {
   this.route('home', {path: '/'});
-  this.route('game');
+  this.route('game', {waitOn: function () {return Meteor.subscribe('gameList')}});
   this.route('user_sign_up', {path: '/users/sign_up'});
   this.route('user', {
     path: '/users/:_id',

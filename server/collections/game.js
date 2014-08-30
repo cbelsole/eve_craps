@@ -11,7 +11,8 @@ Game.allow({
   },
 
   update: function (userId, doc, fieldNames, modifier) {
-    return true;
+    return userId === modifier.$push.players._id &&
+           _.findWhere(doc.players, {_id: userId}) == null;
   },
 
   remove: function (userId, doc) {

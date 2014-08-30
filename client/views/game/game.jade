@@ -2,22 +2,54 @@ template(name="game")
   .container
     .row
       .col-xs-2
-        input.game-name
-        button.create-game create
+        input.create-game-name
+        button.create-game-button create
         ol.list-unstyled.game-list
           | Available Games
-          .no-games No Games
+          .no-games.hidden No Games
           each games
-            li.game-tile
-              +game_tile
-
-      .col-xs-6 game board placeholder
-      .col-xs-4 chat client placeholder
+            +game_tile
+      .col-xs-10
+        .game-content
+          .game-name.hidden= currentGame.name
+          .game-board
+            .current-player-tile.hidden
+              +current_player_tile
+          .player-list.hidden
+            ul.list-unstyled
+              | Players:
+              each currentGame.players
+                +player_tile
+      //- .col-xs-4 chat client placeholder
 
 template(name="game_tile")
-  div(id=_id)
+  li.game-tile(id=_id)
     div= name
     div
-      | players
-      = players.length
+      | players:
+      = playerCount
     button.remove-game remove
+
+template(name="player_tile")
+  //- https://github.com/mquandalle/meteor-jade/issues/66
+  //- if +ifEqual currentUser._id, currentGame.host
+  //-   li.player-tile
+  //-     = profile.displayName
+  //-     | (Host)
+  //- else
+  //-   li.player-tile= profile.displayName
+
+  li.player-tile= profile.displayName
+
+template(name="current_player_tile")
+  .player-info
+    div
+      | Name:
+      =currentUser.profile.displayName
+    div
+      | Money:
+      =currentUser.profile.money
+  .current-bet.hidden
+    .current-bet-name
+    input(type="text")
+    button bet

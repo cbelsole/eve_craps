@@ -7,12 +7,14 @@ Template.user_sign_up.events({
         password = t.find('#password').value,
         confirmPassword = t.find('#confirm_password').value,
         character = t.find('#character').value,
+        displayName = t.find('#display_name').value,
         errors = [],
         userinfo;
 
     errors = errors.concat(ParamValidator.isValidEmail(email, confirmEmail))
                    .concat(ParamValidator.isValidPassword(password, confirmPassword, true))
-                   .concat(ParamValidator.isValidParam(character, 'Character'));
+                   .concat(ParamValidator.isValidParam(character, 'Character'))
+                   .concat(ParamValidator.isValidParam(displayName, 'Display Name'));
 
     if(errors.length > 0) {
       errorMessage(errors);
@@ -20,7 +22,7 @@ Template.user_sign_up.events({
       return false;
     }
 
-    Accounts.createUser({email: email, password: password, profile: {character: character}}, function (err) {
+    Accounts.createUser({email: email, password: password, profile: {character: character, displayName: displayName}}, function (err) {
       if (err) {
         errorMessage(err);
       } else {

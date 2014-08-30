@@ -8,6 +8,7 @@ Template.user.events({
         character = t.find('#character').value,
         password = t.find('#password').value,
         oldPassword = t.find('#oldPassword').value,
+        displayName = t.find('#displayName').value,
         errors = [],
         params = {};
 
@@ -40,6 +41,10 @@ Template.user.events({
 
     if(!ParamValidator.isEmpty(character)) {
       params.character = character;
+    }
+
+    if(!ParamValidator.isEmpty(displayName)) {
+      params.displayName = displayName;
     }
 
     Meteor.call('saveUser', Meteor.userId(), params, function (err, res) {

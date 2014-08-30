@@ -5,7 +5,8 @@
       "jade": {},
       "font-awesome-4-less": {},
       "iron-router": {},
-      "bootstrap-3": {}
+      "bootstrap-3": {},
+      "pixijs": {}
     },
     "packages": {
       "jade": {
@@ -27,6 +28,11 @@
         "git": "https://github.com/mangasocial/meteor-bootstrap-3.git",
         "tag": "v3.2.0-1",
         "commit": "17a63902fc6cf1096c5289d963c66cf28b474727"
+      },
+      "pixijs": {
+        "git": "https://github.com/foxdog-studios/meteor-pixijs",
+        "tag": "v0.0.1",
+        "commit": "5b69d345dc99204d1569c31b693ad6ac395e5cf2"
       },
       "iron-layout": {
         "git": "https://github.com/EventedMind/iron-layout.git",

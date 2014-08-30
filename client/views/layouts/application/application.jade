@@ -3,6 +3,7 @@ template(name="application")
     +header
   .container
     if currentUser
+      span= currentUser.profile.displayName
       a#edit(href='#') Edit
       | /
       a#sign-out(href='#') Sign out

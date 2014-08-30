@@ -11,6 +11,7 @@ Meteor.methods({
     if(!(userId === this.userId)) {
       throw new Meteor.error(403, "You are not authorized to modify this user.");
     }
+
     var user = Meteor.users.findOne({_id: userId});
     delete user._id;
 
@@ -30,10 +31,13 @@ Meteor.methods({
       user.profile.character = options.character;
     }
 
-    if(
-      options.newPassword && options.oldPassword &&
-      options.newPassword === options.oldPassword
-    ) {
+    if(options.displayName) {
+     user.profile.displayName = options.displayName;
+    }
+
+    if(options.newPassword &&
+       options.oldPassword &&
+       options.newPassword === options.oldPassword) {
       return {status: 400, message: "bad password data."}
     }
 
