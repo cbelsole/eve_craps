@@ -5,12 +5,12 @@
 
 standard-app-packages
 insecure
-jade
 jquery
 less
-font-awesome-4-less
 accounts-base
 accounts-password
-iron-router
-bootstrap-3
-pixijs
+cmather:iron-router@0.8.2
+eldog:pixijs@0.0.1
+waitingkuo:jade
+mizzao:bootstrap-3
+
