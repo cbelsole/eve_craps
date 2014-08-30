@@ -2,8 +2,7 @@ Template.user.events({
   'submit #user-edit-form' : function(e, t){
     e.preventDefault();
 
-    var username = t.find('#username').value,
-        email = t.find('#email').value,
+    var email = t.find('#email').value,
         password = t.find('#password').value,
         character = t.find('#character').value,
         password = t.find('#password').value,
@@ -27,10 +26,6 @@ Template.user.events({
       return false;
     }
 
-    if(!ParamValidator.isEmpty(username)) {
-      params.username = username;
-    }
-
     if(!ParamValidator.isEmpty(email)) {
       params.email = email;
     }
@@ -51,11 +46,9 @@ Template.user.events({
       if (err) {
         errorMessage(err.message);
       } else {
-        successMessage("User info updated.");
+        successMessage(res.message);
       }
     });
-
-
 
     return false;
   }
