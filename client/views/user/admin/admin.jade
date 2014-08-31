@@ -1,0 +1,6 @@
+template(name="admin")
+  ul
+    each users
+      a(href="#")
+        li(id=this._id)= this.profile.displayName
+

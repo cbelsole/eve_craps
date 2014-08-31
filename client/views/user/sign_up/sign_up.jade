@@ -5,16 +5,16 @@ template(name="user_sign_up")
       form(id="sign-up-form" action="action")
         input(type="text" id="email" placeholder="email")
         br
-        input(type="text" id="confirm_email" placeholder="confirm email")
+        input(type="text" id="confirmEmail" placeholder="confirm email")
         br
         input(type="password" id="password" placeholder="password")
         br
-        input(type="password" id="confirm_password" placeholder="confirm password")
+        input(type="password" id="confirmPassword" placeholder="confirm password")
         br
         input(type="text" id="character" placeholder="character name")
         br
-        input(type="text" id="display_name" placeholder="display name")
+        input(type="text" id="displayName" placeholder="display name")
         .row
           .col-md-12
             input.btn.btn-default(type="submit" value="Sign up")
-            a(href="{{pathFor 'user_sign_up'}}")
+            a.btn.btn-default(href="{{pathFor 'home'}}") Back

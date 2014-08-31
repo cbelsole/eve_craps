@@ -17,14 +17,19 @@ template(name="user")
           label
             | Display Name
             input(type="text" id="displayName" placeholder="display name" value="#{profile.displayName}")
+          if isAdmin
+            br
+            label
+              | Money
+              input(type="input" id="money" placeholder="#{profile.money}")
         .col-md-6.text-center
           h2 Password Info
           label
             | Password
-            input(type="password" id="password" placeholder="password")
+            input(type="password" id="newPassword" placeholder="new password")
           br
           label
             | Old Password
             input(type="password" id="oldPassword" placeholder="old password")
-      input.btn.btn-default(type="submit" value="edit")
+      input.btn.btn-default(type="submit" value="edit" id=_id)
       a(href="{{pathFor 'game'}}")

@@ -4,9 +4,12 @@ template(name="application")
   .container
     if currentUser
       span= currentUser.profile.displayName
+      if currentUser.profile.admin
+        a(href="{{pathFor 'admin'}}") (Admin)
       a#edit(href='#') Edit
       | /
       a#sign-out(href='#') Sign out
+
     +yield
     .row.col-md-12.text-center
       ul#error.bg-danger

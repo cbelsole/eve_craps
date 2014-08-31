@@ -3,33 +3,27 @@ Template.user_sign_up.events({
     e.preventDefault();
 
     var email = t.find('#email').value,
-        confirmEmail = t.find('#confirm_email').value,
+        confirmEmail = t.find('#confirmEmail').value,
         password = t.find('#password').value,
-        confirmPassword = t.find('#confirm_password').value,
+        confirmPassword = t.find('#confirmPassword').value,
         character = t.find('#character').value,
-        displayName = t.find('#display_name').value,
-        errors = [],
-        userinfo;
-
-    errors = errors.concat(ParamValidator.isValidEmail(email, confirmEmail))
-                   .concat(ParamValidator.isValidPassword(password, confirmPassword, true))
-                   .concat(ParamValidator.isValidParam(character, 'Character'))
-                   .concat(ParamValidator.isValidParam(displayName, 'Display Name'));
-
-    if(errors.length > 0) {
-      errorMessage(errors);
-
-      return false;
-    }
-
-    Accounts.createUser({email: email, password: password, profile: {character: character, displayName: displayName}}, function (err) {
-      if (err) {
-        errorMessage(err);
-      } else {
-        clearErrors();
-        Router.go('game');
-      }
-    });
+        displayName = t.find('#displayName').value,
+        response = Meteor.call(
+          'createNewUser',
+          email,
+          confirmEmail,
+          password,
+          confirmPassword,
+          character,
+          displayName,
+          function (error) {
+            if(error) {
+              errorMessage(error.message);
+            } else {
+              clearErrors();
+              Router.go('game');
+            }
+          });
 
     return false;
   }

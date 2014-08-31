@@ -3,18 +3,7 @@ Template.home.events({
     e.preventDefault();
     // retrieve the input field values
     var email = t.find('#email').value,
-        password = t.find('#password').value,
-        errors = [];
-
-
-    errors = errors.concat(ParamValidator.isValidParam(email, 'Email'))
-                   .concat(ParamValidator.isValidParam(password, 'Password'));
-
-    if(errors.length > 0) {
-      errorMessage(errors);
-
-      return false;
-    }
+        password = t.find('#password').value;
 
     Meteor.loginWithPassword(email, password, function(err){
       if (err) {
