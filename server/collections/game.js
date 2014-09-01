@@ -8,8 +8,6 @@ Game.allow({
       return userId === modifier.$push.players._id &&
            _.findWhere(doc.players, {_id: userId}) == null;
     } else if (modifier.$pull && modifier.$pull.players) {
-      console.log(userId === modifier.$pull.players._id &&
-           _.findWhere(doc.players, {_id: userId}) != null)
       return userId === modifier.$pull.players._id &&
            _.findWhere(doc.players, {_id: userId}) != null;
     }
