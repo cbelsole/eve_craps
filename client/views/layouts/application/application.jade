@@ -1,7 +1,7 @@
 template(name="application")
   header
     +header
-  .container
+  .container-fluid
     if currentUser
       span= currentUser.profile.displayName
       if currentUser.profile.admin
@@ -9,7 +9,8 @@ template(name="application")
       a#edit(href='#') Edit
       | /
       a#sign-out(href='#') Sign out
-
+      | /
+      a(href="{{pathFor 'game'}}") Let's play some craps
     +yield
     .row.col-md-12.text-center
       ul#error.bg-danger

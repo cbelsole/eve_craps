@@ -10,21 +10,21 @@ Template.game.rendered = function () {
   }
 
   Deps.autorun(function () {
-    if(Session.get('currentGameId')) {
+    if (Session.get('currentGameId')) {
       Template.game.subs['currentGame'] = Meteor.subscribe('currentGame', Session.get('currentGameId'));
+      if (Template.game.subs['currentGame'].ready()) {
+        var game = Game.findOne({_id: Session.get('currentGameId')}),
+            craps = Craps.getInstance();
+        craps.init(game);
+      }
+    } else {
+      Craps.getInstance().tearDown();
     }
   });
 
-  Deps.autorun(function () {
-    if(Session.get('currentGameId') && Template.game.subs['currentGame'].ready()) {
-      var game = Game.findOne({_id: Session.get('currentGameId')}),
-          craps = Craps.getInstance();
-      craps.init(game);
-    }
-  });
 
   Deps.autorun(function () {
-    if(Session.get('currentGameId') && Template.game.subs['currentGame'].ready()) {
+    if (Session.get('currentGameId') && Template.game.subs['currentGame'].ready()) {
       $('.game-name').removeClass('hidden');
       Session.set('currentGame', Game.findOne({_id: Session.get('currentGameId')}));
     }
@@ -46,10 +46,6 @@ Template.game.currentGame = function () {
 }
 
 Template.game.events = {
-  'click .remove-game': function () {
-    Game.remove(this._id);
-  },
-
   'click .create-game-button, keydown .create-game-name': function (event) {
     if(event.type === 'keydown' && event.keyCode !== 13) {
       return;
@@ -76,16 +72,33 @@ Template.game.events = {
 
     $game.css('border', '1px solid red');
 
-    Game.update(
-      $game.attr('id'),
-      {
-        $inc: {playerCount: 1},
-        $push: {players: Meteor.user()}
-      }
-    )
+    if(Game.find({'players._id': Meteor.userId()}).count() === 0) {
+      Game.update(
+        $game.attr('id'),
+        {
+          $inc: {playerCount: 1},
+          $push: {players: Meteor.user()}
+        }
+      );
+    }
+
     if(_.findWhere(Game.findOne({_id: $game.attr('id')}).players, {_id: Meteor.userId()})) {
       Session.set('currentGameId', $game.attr('id'));
     }
+  },
+
+  'click #leave-game': function () {
+    Session.get('currentGameId')
+
+    Game.update(
+      Session.get('currentGameId'),
+      {
+        $inc: {playerCount: -1},
+        $pull: {players: Meteor.user()}
+      }
+    );
+
+    Session.set('currentGameId', '');
   },
 
   'change .game-list': function(event) {

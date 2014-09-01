@@ -1,26 +1,25 @@
 template(name="game")
-  .container
-    .row
-      .col-xs-2
-        input.create-game-name
-        button.create-game-button create
-        ol.list-unstyled.game-list
-          | Available Games
-          .no-games.hidden No Games
-          each games
-            +game_tile
-      .col-xs-10
-        .game-content
-          .game-name.hidden= currentGame.name
-          .game-board
-            .current-player-tile.hidden
-              +current_player_tile
-          .player-list.hidden
-            ul.list-unstyled
-              | Players:
-              each currentGame.players
-                +player_tile
-      //- .col-xs-4 chat client placeholder
+  .row
+    .col-xs-2
+      input.create-game-name
+      button.create-game-button create
+      ol.list-unstyled.game-list
+        | Available Games
+        .no-games.hidden No Games
+        each games
+          +game_tile
+    .col-xs-10
+      .game-content
+        .game-name.hidden= currentGame.name
+        .game-board
+          .current-player-tile.hidden
+            +current_player_tile
+        .player-list.hidden
+          ul.list-unstyled
+            | Players:
+            each currentGame.players
+              +player_tile
+    //- .col-xs-4 chat client placeholder
 
 template(name="game_tile")
   li.game-tile(id=_id)
@@ -28,7 +27,6 @@ template(name="game_tile")
     div
       | players:
       = playerCount
-    button.remove-game remove
 
 template(name="player_tile")
   //- https://github.com/mquandalle/meteor-jade/issues/66
@@ -39,7 +37,10 @@ template(name="player_tile")
   //- else
   //-   li.player-tile= profile.displayName
 
-  li.player-tile= profile.displayName
+  li.player-tile
+    = profile.displayName
+    #leave-game.btn.btn-default leave
+
 
 template(name="current_player_tile")
   .player-info

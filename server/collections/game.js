@@ -1,18 +1,28 @@
-/*
- * Add query methods like this:
- *  Game.findPublic = function () {
- *    return Game.find({is_public: true});
- *  }
- */
-
 Game.allow({
   insert: function (userId, doc) {
-    return true;
+    return ParamValidator.isNotEmpty(doc.name) && ParamValidator.isNotEmpty(doc.host);
   },
 
   update: function (userId, doc, fieldNames, modifier) {
-    return userId === modifier.$push.players._id &&
+    if (modifier.$push && modifier.$push.players) {
+      return userId === modifier.$push.players._id &&
            _.findWhere(doc.players, {_id: userId}) == null;
+    } else if (modifier.$pull && modifier.$pull.players) {
+      console.log(userId === modifier.$pull.players._id &&
+           _.findWhere(doc.players, {_id: userId}) != null)
+      return userId === modifier.$pull.players._id &&
+           _.findWhere(doc.players, {_id: userId}) != null;
+    }
+  }
+});
+
+Game.deny({
+  insert: function (userId, doc) {
+    return false;
+  },
+
+  update: function (userId, doc, fieldNames, modifier) {
+    return !doc.active;
   },
 
   remove: function (userId, doc) {
@@ -20,16 +30,18 @@ Game.allow({
   }
 });
 
-Game.deny({
-  insert: function (userId, doc) {
-    return ParamValidator.isEmpty(doc.name) || ParamValidator.isEmpty(doc.host);
-  },
+Game.before.insert(function (userId, doc) {
+  doc.active = true;
+  doc.createdAt = Date.now();
+});
 
-  update: function (userId, doc, fieldNames, modifier) {
-    return false;
-  },
-
-  remove: function (userId, doc) {
-    return userId != doc.host;
+Game.before.update(function (userId, doc, fieldNames, modifier, options) {
+  if (modifier.$pull &&
+      modifier.$pull.players &&
+      doc.players.length === 1 &&
+      doc.players[0]._id === modifier.$pull.players._id) {
+    modifier.$set =  _.extend({active: false}, modifier.$set);
   }
+
+  modifier.$set = _.extend({modifiedAt: Date.now()}, modifier.$set);
 });

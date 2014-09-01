@@ -24,14 +24,22 @@ var Craps = new function () {
       }
 
       self.init = function (game) {
-        if(game == null) {
+        if(!game) {
           return;
         }
+
         $('.player-list').removeClass('hidden');
         $('.current-player-tile').removeClass('hidden');
         $('.game-board').prepend(self.renderer.view);
 
         requestAnimationFrame(self.animate);
+      }
+
+      self.tearDown = function () {
+        $('.player-list').addClass('hidden');
+        $('.current-player-tile').addClass('hidden');
+        $('.game-name').addClass('hidden').text('');
+        $('canvas').detach();
       }
 
       function showBet(name) {
