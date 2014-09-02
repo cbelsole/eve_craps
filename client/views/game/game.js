@@ -1,4 +1,5 @@
 Template.game.subs = {};
+Template.game.betHandeler = null;
 
 Template.game.isEqual = function(value1, value2) {
   return value1 === value2;
@@ -11,22 +12,43 @@ Template.game.rendered = function () {
 
   Deps.autorun(function () {
     if (Session.get('currentGameId')) {
-      Template.game.subs['currentGame'] = Meteor.subscribe('currentGame', Session.get('currentGameId'));
-      if (Template.game.subs['currentGame'].ready()) {
+      Template.game.subs['currentGame'] = Meteor.subscribe(
+        'currentGame',
+        Session.get('currentGameId')
+      );
+
+      Template.game.subs['currentGameBets'] = Meteor.subscribe(
+        'currentGameBets',
+        Session.get('currentGameId')
+      );
+
+      if (Template.game.subs['currentGame'].ready() &&
+          Template.game.subs['currentGameBets'].ready()) {
         var game = Game.findOne({_id: Session.get('currentGameId')}),
-            craps = Craps.getInstance();
-        craps.init(game);
+            bets = Bets.find({gameId: Session.get('currentGameId')});
+
+        $('.game-name').removeClass('hidden');
+        Session.set('currentGame', game);
+        Craps.getInstance().init(game);
+
+        $.each(bets.fetch(), function () {
+          console.log('running each bet');
+          Craps.getInstance().addBet(this._id, this);
+        });
+
+        Template.game.betHandeler = bets.observe({
+          added: function (id, fields) {
+            console.log('added bet');
+            Craps.getInstance().addBet(id, fields);
+          },
+          changed: function (id, fields) {
+            console.log('changed bet');
+            Craps.getInstance().addBet(id, fields);
+          }
+        });
       }
     } else {
       Craps.getInstance().tearDown();
-    }
-  });
-
-
-  Deps.autorun(function () {
-    if (Session.get('currentGameId') && Template.game.subs['currentGame'].ready()) {
-      $('.game-name').removeClass('hidden');
-      Session.set('currentGame', Game.findOne({_id: Session.get('currentGameId')}));
     }
   });
 }
@@ -35,6 +57,11 @@ Template.game.destroyed = function () {
   Session.set('currentGameId', null);
   Session.set('currentGame', null);
   delete Template.game.subs['currentGame'];
+  delete Template.game.subs['currentGameBets'];
+
+  if (Template.game.betHandeler) {
+    Template.game.betHandeler.stop();
+  }
 }
 
 Template.game.games = function () {
@@ -50,6 +77,7 @@ Template.game.events = {
     if(event.type === 'keydown' && event.keyCode !== 13) {
       return;
     }
+
     Game.insert({
       name: $('.create-game-name').val(),
       host: Meteor.userId(),
@@ -107,5 +135,15 @@ Template.game.events = {
     } else {
       $('.no-games').css('display', 'none');
     }
+  },
+
+  'click .current-bet button': function () {
+    Bets.insert({
+      gameId: Session.get('currentGameId'),
+      userId: Meteor.userId(),
+      active: true,
+      type: $('.current-bet-name').text(),
+      amount: parseInt($('.current-bet input[type=text]').val())
+    });
   }
 }

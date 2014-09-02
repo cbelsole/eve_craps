@@ -1,6 +1,7 @@
 Game.allow({
   insert: function (userId, doc) {
-    return ParamValidator.isNotEmpty(doc.name) && ParamValidator.isNotEmpty(doc.host);
+    return ParamValidator.isNotEmpty(doc.name) &&
+           ParamValidator.isNotEmpty(doc.host);
   },
 
   update: function (userId, doc, fieldNames, modifier) {
@@ -42,4 +43,14 @@ Game.before.update(function (userId, doc, fieldNames, modifier, options) {
   }
 
   modifier.$set = _.extend({modifiedAt: Date.now()}, modifier.$set);
+});
+
+Game.after.update(function (userId, doc, fieldNames, modifier, options) {
+  if(!doc.active) {
+    Bets.update(
+      {gameId: doc._id, active: true},
+      {$set: {active: false}},
+      {multi: true}
+    );
+  }
 });

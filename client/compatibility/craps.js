@@ -42,9 +42,14 @@ var Craps = new function () {
         $('canvas').detach();
       }
 
+      self.addBet = function (id, fields) {
+        console.log(id);
+        console.log(fields);
+      }
+
       function showBet(name) {
         $('.current-bet').removeClass('hidden');
-        $('.current-bet-name').text(name)
+        $('.current-bet-name').text(name);
       }
 
       function rectBet(name, x, y, lenght, height, debug) {
