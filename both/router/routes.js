@@ -37,7 +37,4 @@ Router.map(function () {
       return Meteor.users.findOne({_id: this.params._id});
     }
   });
-
-  // Routes to implement
-  // forgot password
 });

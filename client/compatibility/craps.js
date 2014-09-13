@@ -23,11 +23,7 @@ var Craps = new function () {
         requestAnimationFrame(self.animate);
       }
 
-      self.init = function (game) {
-        if(!game) {
-          return;
-        }
-
+      self.init = function () {
         $('.player-list').removeClass('hidden');
         $('.current-player-tile').removeClass('hidden');
         $('.game-board').prepend(self.renderer.view);
@@ -42,8 +38,8 @@ var Craps = new function () {
       }
 
       self.addBet = function (id, fields) {
-        console.log(id);
-        console.log(fields);
+        // console.log(id);
+        // console.log(fields);
       }
 
       function showBet(name) {

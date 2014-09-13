@@ -4,7 +4,7 @@ Meteor.publish("currentGameBets", function (gameId) {
     {
       fields: {
         active: 0,
-        updatedAt: 0,
+        createdAt: 0,
         modifiedAt: 0
       }
     }
