@@ -98,11 +98,17 @@ Template.game.events = {
       Template.game.betHandeler.stop();
     }
 
-    Game.update(
-      $game.attr('id'),
-      { $inc: {playerCount: 1}, $push: {players: Meteor.user()} },
-      function () { Template.game.currentGameId.set($game.attr('id')); }
-    );
+    var activeGame = Game.findOne({_id: Template.game.currentGameId.get()});
+
+    if(activeGame && _.findWhere(activeGame.players, {_id: Meteor.userId()}) == null) {
+      Game.update(
+        $game.attr('id'),
+        { $inc: {playerCount: 1}, $push: {players: Meteor.user()} },
+        function () { Template.game.currentGameId.set($game.attr('id')); }
+      );
+    } else {
+      Template.game.currentGameId.set($game.attr('id'));
+    }
   },
 
   'click #leave-game': function () {
