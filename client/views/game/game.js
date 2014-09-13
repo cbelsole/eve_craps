@@ -1,9 +1,10 @@
 Template.game.subs = {};
 Template.game.betHandeler = null;
+Template.game.currentGameId = ReactiveVar('');
 
-Template.game.isEqual = function(value1, value2) {
-  return value1 === value2;
-}
+Template.game.currentGame = function () {
+  return Game.findOne({_id: Template.game.currentGameId.get()});
+};
 
 Template.game.rendered = function () {
   if(!Game.findOne()) {
@@ -11,41 +12,38 @@ Template.game.rendered = function () {
   }
 
   Deps.autorun(function () {
-    if (Session.get('currentGameId')) {
+    if (Template.game.currentGameId.get()) {
       Template.game.subs['currentGame'] = Meteor.subscribe(
         'currentGame',
-        Session.get('currentGameId')
+        Template.game.currentGameId.get()
       );
 
       Template.game.subs['currentGameBets'] = Meteor.subscribe(
         'currentGameBets',
-        Session.get('currentGameId')
+        Template.game.currentGameId.get()
       );
 
       if (Template.game.subs['currentGame'].ready() &&
           Template.game.subs['currentGameBets'].ready()) {
-        var game = Game.findOne({_id: Session.get('currentGameId')}),
-            bets = Bets.find({gameId: Session.get('currentGameId')});
+        var bets = Bets.find({gameId: Template.game.currentGameId.get()});
 
-        $('.game-name').removeClass('hidden');
-        Session.set('currentGame', game);
-        Craps.getInstance().init(game);
+        Craps.getInstance().init(Game.findOne({_id: Template.game.currentGameId.get()}));
 
-        $.each(bets.fetch(), function () {
-          console.log('running each bet');
-          Craps.getInstance().addBet(this._id, this);
-        });
+        // $.each(bets.fetch(), function () {
+        //   console.log('running each bet');
+        //   Craps.getInstance().addBet(this._id, this);
+        // });
 
-        Template.game.betHandeler = bets.observe({
-          added: function (id, fields) {
-            console.log('added bet');
-            Craps.getInstance().addBet(id, fields);
-          },
-          changed: function (id, fields) {
-            console.log('changed bet');
-            Craps.getInstance().addBet(id, fields);
-          }
-        });
+        // Template.game.betHandeler = bets.observe({
+        //   added: function (id, fields) {
+        //     console.log('added bet');
+        //     Craps.getInstance().addBet(id, fields);
+        //   },
+        //   changed: function (id, fields) {
+        //     console.log('changed bet');
+        //     Craps.getInstance().addBet(id, fields);
+        //   }
+        // });
       }
     } else {
       Craps.getInstance().tearDown();
@@ -54,8 +52,6 @@ Template.game.rendered = function () {
 }
 
 Template.game.destroyed = function () {
-  Session.set('currentGameId', null);
-  Session.set('currentGame', null);
   delete Template.game.subs['currentGame'];
   delete Template.game.subs['currentGameBets'];
 
@@ -66,10 +62,6 @@ Template.game.destroyed = function () {
 
 Template.game.games = function () {
   return Game.find();
-}
-
-Template.game.currentGame = function () {
-  return Session.get('currentGame');
 }
 
 Template.game.events = {
@@ -86,7 +78,7 @@ Template.game.events = {
     }, function (err, id) {
       if(!err) {
         $('.create-game-name').val('');
-        Session.set('currentGameId', id);
+        Template.game.currentGameId.set(id);
       }
     });
   },
@@ -100,33 +92,23 @@ Template.game.events = {
 
     $game.css('border', '1px solid red');
 
-    if(Game.find({'players._id': Meteor.userId()}).count() === 0) {
-      Game.update(
-        $game.attr('id'),
-        {
-          $inc: {playerCount: 1},
-          $push: {players: Meteor.user()}
-        }
-      );
-    }
-
-    if(_.findWhere(Game.findOne({_id: $game.attr('id')}).players, {_id: Meteor.userId()})) {
-      Session.set('currentGameId', $game.attr('id'));
-    }
+    Game.update(
+      $game.attr('id'),
+      { $inc: {playerCount: 1}, $push: {players: Meteor.user()} },
+      function () { Template.game.currentGameId.set($game.attr('id')); }
+    );
   },
 
   'click #leave-game': function () {
-    Session.get('currentGameId')
-
     Game.update(
-      Session.get('currentGameId'),
+      Template.game.currentGameId.get(),
       {
         $inc: {playerCount: -1},
         $pull: {players: Meteor.user()}
       }
     );
 
-    Session.set('currentGameId', '');
+    Template.game.currentGameId.set('');
   },
 
   'change .game-list': function(event) {
@@ -139,7 +121,7 @@ Template.game.events = {
 
   'click .current-bet button': function () {
     Bets.insert({
-      gameId: Session.get('currentGameId'),
+      gameId: Template.game.currentGameId.get(),
       userId: Meteor.userId(),
       active: true,
       type: $('.current-bet-name').text(),

@@ -10,7 +10,7 @@ template(name="game")
           +game_tile
     .col-xs-10
       .game-content
-        .game-name.hidden= currentGame.name
+        div= currentGame.name
         .game-board
           .current-player-tile.hidden
             +current_player_tile
@@ -36,7 +36,6 @@ template(name="player_tile")
   //-     | (Host)
   //- else
   //-   li.player-tile= profile.displayName
-
   li.player-tile
     = this.profile.displayName
     #leave-game.btn.btn-default leave

@@ -38,7 +38,6 @@ var Craps = new function () {
       self.tearDown = function () {
         $('.player-list').addClass('hidden');
         $('.current-player-tile').addClass('hidden');
-        $('.game-name').addClass('hidden').text('');
         $('canvas').detach();
       }
 
