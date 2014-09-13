@@ -39,6 +39,11 @@ Template.game.rendered = function () {
     if (Template.game.currentGameId.get() &&
         Template.game.subs['currentGameBets'] &&
         Template.game.subs['currentGameBets'].ready()) {
+
+      if (Template.game.betHandeler) {
+        Template.game.betHandeler.stop();
+      }
+
       Template.game.betHandeler = Bets.find({gameId: Template.game.currentGameId.get()}).observeChanges({
         added: function (id, fields) {
           console.log('added bet');
@@ -93,10 +98,6 @@ Template.game.events = {
     });
 
     $game.css('border', '1px solid red');
-
-    if (Template.game.betHandeler) {
-      Template.game.betHandeler.stop();
-    }
 
     var activeGame = Game.findOne({_id: Template.game.currentGameId.get()});
 
