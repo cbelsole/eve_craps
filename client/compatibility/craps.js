@@ -38,8 +38,8 @@ var Craps = new function () {
       }
 
       self.addBet = function (id, fields) {
-        // console.log(id);
-        // console.log(fields);
+        console.log(id);
+        console.log(fields);
       }
 
       function showBet(name) {

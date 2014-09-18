@@ -46,11 +46,9 @@ Template.game.rendered = function () {
 
       Template.game.betHandeler = Bets.find({gameId: Template.game.currentGameId.get()}).observeChanges({
         added: function (id, fields) {
-          console.log('added bet');
           Craps.getInstance().addBet(id, fields);
         },
         changed: function (id, fields) {
-          console.log('changed bet');
           Craps.getInstance().addBet(id, fields);
         }
       });
@@ -101,14 +99,14 @@ Template.game.events = {
 
     var activeGame = Game.findOne({_id: Template.game.currentGameId.get()});
 
-    if(activeGame && _.findWhere(activeGame.players, {_id: Meteor.userId()}) == null) {
+    if(activeGame && _.findWhere(activeGame.players, {_id: Meteor.userId()}) != null) {
+      Template.game.currentGameId.set($game.attr('id'));
+    } else {
       Game.update(
         $game.attr('id'),
         { $inc: {playerCount: 1}, $push: {players: Meteor.user()} },
         function () { Template.game.currentGameId.set($game.attr('id')); }
       );
-    } else {
-      Template.game.currentGameId.set($game.attr('id'));
     }
   },
 
