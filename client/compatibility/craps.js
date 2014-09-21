@@ -37,14 +37,146 @@ var Craps = new function () {
         $('canvas').detach();
       }
 
+      self.removeBet = function (id) {
+        console.log(id);
+
+        var betBox = _.find(self.board.children, function (bet) {
+          return _.find(bet.children, function (chip) {
+            return chip.id = id;
+          });
+        });
+
+        betBox.removeChild(_.find(betBox.children, function (chip) {
+          return chip.id == id;
+        }));
+      }
+
       self.addBet = function (id, fields) {
         console.log(id);
         console.log(fields);
+
+        var bet  = _.find(self.board.children, function(bet) { return bet.type == fields.type }),
+            chip = new PIXI.Graphics(),
+            playerColor;
+
+        if (fields.userId == Meteor.userId()) {
+          playerColor = 0x0066FF;
+        } else {
+          var currentGame = Game.findOne({_id: Template.game.currentGameId.get()});
+          playerColor = _.find(currentGame.players, function (player) {
+            return player._id == fields.userId
+          }).color;
+        }
+
+        chip.hitArea = new PIXI.Circle(getULBetX(bet.hitArea) + 10, getULBetY(bet.hitArea) + 10, 10);
+        chip.interactive = true;
+        chip.id = id;
+        chip.userId = fields.userId;
+        chip.amount = fields.amount;
+
+        chip.beginFill(playerColor);
+        chip.drawCircle(getULBetX(bet.hitArea) + 10, getULBetY(bet.hitArea) + 10, 10);
+        chip.endFill();
+
+        bet.addChild(chip);
+
+        amountText = new PIXI.Text('' + fields.amount, {font: 'bold 12px Arial'});
+        amountText.x = getULBetX(bet.hitArea) + 3;
+        amountText.y = getULBetY(bet.hitArea) + 3;
+
+        chip.addChild(amountText);
+      }
+
+      function getULBetX(hitArea) {
+        if (hitArea instanceof PIXI.Polygon) {
+          return _.min(hitArea.points, function (point) { return point.x}).x;
+        } else {
+          return hitArea.x;
+        }
+      }
+
+      function getULBetY(hitArea) {
+        if (hitArea instanceof PIXI.Polygon) {
+          return _.min(hitArea.points, function (point) { return point.x}).y;
+        } else {
+          return hitArea.y;
+        }
       }
 
       function showBet(name) {
-        $('.current-bet').removeClass('hidden');
+        var bet   = _.find(self.board.children, function(bet) { return bet.type == name }),
+            myBet = _.find(bet ? bet.children : [], function(chip) { return chip.userId == Meteor.userId() }),
+            $betTile = $('.current-bet');
+
+        $betTile.removeClass('hidden');
         $('.current-bet-name').text(name);
+
+        if (myBet) {
+          $betTile.find('input').val(myBet.amount)
+        }
+      }
+
+      function setUpBets(debug) {
+        //put in:
+        // The horn
+        // Hard and Horny
+        // 2 or 12/Hi-Lo
+        if(debug) {
+          self.coordText = new PIXI.Text("coordText");
+          self.coordText.x = 600;
+          self.coordText.y = 50;
+          self.board.addChild(self.coordText)
+          self.board.interactive = true;
+          self.board.mousedown = function (coords) {
+            self.coordText.setText("" + coords.global.x + ", " + coords.global.y );
+          }
+        }
+
+        //rect bets
+        self.board.addChild(rectBet("Don't come", 102, 26, 61, 99, debug));
+        self.board.addChild(rectBet('Four', 165, 26, 61, 99, debug));
+        self.board.addChild(rectBet('Five', 227, 26, 61, 99, debug));
+        self.board.addChild(rectBet('Six', 289, 26, 61, 99, debug));
+        self.board.addChild(rectBet('Eight', 351, 26, 62, 99, debug));
+        self.board.addChild(rectBet('Nine', 413, 26, 62, 99, debug));
+        self.board.addChild(rectBet('Ten', 476, 26, 62, 99, debug));
+        self.board.addChild(rectBet('Come', 102, 126, 373, 61, debug));
+        self.board.addChild(rectBet("Don't pass bar", 165, 251, 310, 36, debug));
+
+        //one off bets
+        self.board.addChild(rectBet('7/Any Seven', 551, 150, 223, 23, debug));
+        self.board.addChild(rectBet('Hard 3/Ace-Deuce', 551, 174, 111, 43, debug));
+        self.board.addChild(rectBet('Hard 10', 663, 174, 111, 43, debug));
+        self.board.addChild(rectBet('Hard 8', 551, 218, 111, 43, debug));
+        self.board.addChild(rectBet('Hard 4', 663, 218, 111, 43, debug));
+        self.board.addChild(rectBet('Hard 3', 551, 261, 73, 43, debug));
+        self.board.addChild(rectBet('Hard 2/Snake Eyes/Aces', 626, 261, 73, 43, debug));
+        self.board.addChild(rectBet('Hard 12/Boxcars/Midnight/Cornrows', 701, 261, 73, 43, debug));
+        self.board.addChild(rectBet('Hard 11/Yo', 551, 305, 111, 43, debug));
+        self.board.addChild(rectBet('Hard 11/Yo', 663, 305, 111, 43, debug));
+        self.board.addChild(rectBet('Any Craps/Three-Way', 551, 350, 223, 24, debug));
+        self.board.addChild(circleBet('C & E', 509, 206, 10, debug));
+        self.board.addChild(circleBet('C & E', 509, 233, 10, debug));
+        self.board.addChild(circleBet('C & E', 509, 260, 10, debug));
+        self.board.addChild(circleBet('C & E', 509, 287, 10, debug));
+        self.board.addChild(circleBet('C & E', 509, 314, 10, debug));
+        self.board.addChild(circleBet('C & E', 509, 341, 10, debug));
+        self.board.addChild(circleBet('C & E', 509, 368, 10, debug));
+        self.board.addChild(circleBet('C & E', 534, 362, 10, debug));
+        self.board.addChild(circleBet('C & E', 534, 337, 10, debug));
+        self.board.addChild(circleBet('C & E', 534, 312, 10, debug));
+        self.board.addChild(circleBet('C & E', 534, 287, 10, debug));
+        self.board.addChild(circleBet('C & E', 534, 262, 10, debug));
+        self.board.addChild(circleBet('C & E', 534, 238, 10, debug));
+        self.board.addChild(circleBet('C & E', 534, 212, 10, debug));
+
+        // polygon bets
+        self.board.addChild(fieldBet(debug));
+        self.board.addChild(dontPassBarBet(debug));
+        self.board.addChild(bigSixBet(debug));
+        self.board.addChild(bigEightBet(debug));
+        self.board.addChild(passLineBet(debug));
+        self.board.addChild(backUpBet(debug));
       }
 
       function rectBet(name, x, y, lenght, height, debug) {
@@ -58,75 +190,12 @@ var Craps = new function () {
 
         rect.hitArea = new PIXI.Rectangle(x, y, lenght, height);
         rect.interactive = true;
+        rect.type = name;
         rect.mousedown = function () {
           showBet(name);
         };
 
         return rect;
-      }
-
-      function setUpBets(debug) {
-
-      //put in:
-      // The horn
-      // Hard and Horny
-      // 2 or 12/Hi-Lo
-      if(debug) {
-        self.coordText = new PIXI.Text("coordText");
-        self.coordText.x = 600;
-        self.coordText.y = 50;
-        self.board.addChild(self.coordText)
-        self.board.interactive = true;
-        self.board.mousedown = function (coords) {
-          self.coordText.setText("" + coords.global.x + ", " + coords.global.y );
-        }
-      }
-
-      //rect bets
-      self.board.addChild(rectBet("Don't come", 102, 26, 61, 99, debug));
-      self.board.addChild(rectBet('Four', 165, 26, 61, 99, debug));
-      self.board.addChild(rectBet('Five', 227, 26, 61, 99, debug));
-      self.board.addChild(rectBet('Six', 289, 26, 61, 99, debug));
-      self.board.addChild(rectBet('Eight', 351, 26, 62, 99, debug));
-      self.board.addChild(rectBet('Nine', 413, 26, 62, 99, debug));
-      self.board.addChild(rectBet('Ten', 476, 26, 62, 99, debug));
-      self.board.addChild(rectBet('Come', 102, 126, 373, 61, debug));
-      self.board.addChild(rectBet("Don't pass bar", 165, 251, 310, 36, debug));
-
-      //one off bets
-      self.board.addChild(rectBet('7/Any Seven', 551, 150, 223, 23, debug));
-      self.board.addChild(rectBet('Hard 3/Ace-Deuce', 551, 174, 111, 43, debug));
-      self.board.addChild(rectBet('Hard 10', 663, 174, 111, 43, debug));
-      self.board.addChild(rectBet('Hard 8', 551, 218, 111, 43, debug));
-      self.board.addChild(rectBet('Hard 4', 663, 218, 111, 43, debug));
-      self.board.addChild(rectBet('Hard 3', 551, 261, 73, 43, debug));
-      self.board.addChild(rectBet('Hard 2/Snake Eyes/Aces', 626, 261, 73, 43, debug));
-      self.board.addChild(rectBet('Hard 12/Boxcars/Midnight/Cornrows', 701, 261, 73, 43, debug));
-      self.board.addChild(rectBet('Hard 11/Yo', 551, 305, 111, 43, debug));
-      self.board.addChild(rectBet('Hard 11/Yo', 663, 305, 111, 43, debug));
-      self.board.addChild(rectBet('Any Craps/Three-Way', 551, 350, 223, 24, debug));
-      self.board.addChild(circleBet('C & E', 509, 206, 10, debug));
-      self.board.addChild(circleBet('C & E', 509, 233, 10, debug));
-      self.board.addChild(circleBet('C & E', 509, 260, 10, debug));
-      self.board.addChild(circleBet('C & E', 509, 287, 10, debug));
-      self.board.addChild(circleBet('C & E', 509, 314, 10, debug));
-      self.board.addChild(circleBet('C & E', 509, 341, 10, debug));
-      self.board.addChild(circleBet('C & E', 509, 368, 10, debug));
-      self.board.addChild(circleBet('C & E', 534, 362, 10, debug));
-      self.board.addChild(circleBet('C & E', 534, 337, 10, debug));
-      self.board.addChild(circleBet('C & E', 534, 312, 10, debug));
-      self.board.addChild(circleBet('C & E', 534, 287, 10, debug));
-      self.board.addChild(circleBet('C & E', 534, 262, 10, debug));
-      self.board.addChild(circleBet('C & E', 534, 238, 10, debug));
-      self.board.addChild(circleBet('C & E', 534, 212, 10, debug));
-
-      // polygon bets
-      self.board.addChild(fieldBet(debug));
-      self.board.addChild(dontPassBarBet(debug));
-      self.board.addChild(bigSixBet(debug));
-      self.board.addChild(bigEightBet(debug));
-      self.board.addChild(passLineBet(debug));
-      self.board.addChild(backUpBet(debug));
       }
 
       function circleBet(name, x, y, radius, debug) {
@@ -139,6 +208,7 @@ var Craps = new function () {
         }
         circle.hitArea = new PIXI.Circle(x, y, radius);
         circle.interactive = true;
+        circle.type = name;
         circle.mousedown = function () {
           showBet(name);
         };
@@ -160,6 +230,7 @@ var Craps = new function () {
 
         field.hitArea = new PIXI.Polygon(476, 189, 475, 249, 164, 249, 103, 189);
         field.interactive = true;
+        field.type = 'Field';
         field.mousedown = function () {
           showBet('Field');
         };
@@ -181,6 +252,7 @@ var Craps = new function () {
 
         dontPassBar.hitArea = new PIXI.Polygon(100, 188, 100, 27, 65, 50, 65, 188);
         dontPassBar.interactive = true;
+        dontPassBar.type = "Don't pass bar";
         dontPassBar.mousedown = function () {
           showBet("Don't pass bar");
         };
@@ -209,8 +281,9 @@ var Craps = new function () {
           65, 258
         );
         bigSix.interactive = true;
+        bigSix.type = 'Big 6';
         bigSix.mousedown = function () {
-          showBet("Big 6");
+          showBet('Big 6');
         };
 
         return bigSix;
@@ -237,8 +310,9 @@ var Craps = new function () {
           92, 287
         );
         bigEight.interactive = true;
+        bigEight.type = 'Big 8';
         bigEight.mousedown = function () {
-          showBet("Big 8");
+          showBet('Big 8');
         };
 
         return bigEight;
@@ -279,8 +353,9 @@ var Craps = new function () {
           64, 261
         );
         passLine.interactive = true;
+        passLine.type = 'Pass line';
         passLine.mousedown = function () {
-          showBet("Pass line");
+          showBet('Pass line');
         };
 
         return passLine;
@@ -317,8 +392,9 @@ var Craps = new function () {
           24, 265
         );
         backUp.interactive = true;
+        backUp.type = 'Back up';
         backUp.mousedown = function () {
-          showBet("Back up");
+          showBet('Back up');
         };
 
         return backUp;

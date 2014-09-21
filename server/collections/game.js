@@ -1,8 +1,7 @@
-var playerColors = ['Green', 'Brown', 'Pink', 'Yellow', 'Grey'];
+var playerColors = [0xFFFF00, 0xFF9933, 0xFF9933, 0x66CC66, 0x996633];
 
 Game.allow({
   insert: function (userId, doc) {
-    console.log(doc)
     return ParamValidator.isNotEmpty(doc.name) &&
            ParamValidator.isNotEmpty(doc.host);
   },
@@ -48,7 +47,10 @@ Game.before.update(function (userId, doc, fieldNames, modifier, options) {
 
   modifier.$set = _.extend({modifiedAt: Date.now()}, modifier.$set);
   if(modifier.$push && modifier.$push.players) {
-    modifier.$push.players.color = _.sample(playerColors);
+    var currentPlayerColors = _.map(doc.players, function (player) { return player.color; }),
+        availableColors = _.difference(playerColors, currentPlayerColors);
+
+    modifier.$push.players.color = _.sample(availableColors);
   }
 });
 
