@@ -38,8 +38,6 @@ var Craps = new function () {
       }
 
       self.removeBet = function (id) {
-        console.log(id);
-
         var betBox = _.find(self.board.children, function (bet) {
           return _.find(bet.children, function (chip) {
             return chip.id = id;
@@ -52,12 +50,12 @@ var Craps = new function () {
       }
 
       self.addBet = function (id, fields) {
-        console.log(id);
-        console.log(fields);
-
         var bet  = _.find(self.board.children, function(bet) { return bet.type == fields.type }),
+            chipCount = bet.children.length,
             chip = new PIXI.Graphics(),
-            playerColor;
+            playerColor
+            radius = 10,
+            circumference = radius * 2 ;
 
         if (fields.userId == Meteor.userId()) {
           playerColor = 0x0066FF;
@@ -68,20 +66,27 @@ var Craps = new function () {
           }).color;
         }
 
-        chip.hitArea = new PIXI.Circle(getULBetX(bet.hitArea) + 10, getULBetY(bet.hitArea) + 10, 10);
-        chip.interactive = true;
+        chip.hitArea = new PIXI.Circle(
+          getULBetX(bet.hitArea) + radius + (circumference * chipCount),
+          getULBetY(bet.hitArea) + radius,
+          radius
+        );
         chip.id = id;
         chip.userId = fields.userId;
         chip.amount = fields.amount;
 
         chip.beginFill(playerColor);
-        chip.drawCircle(getULBetX(bet.hitArea) + 10, getULBetY(bet.hitArea) + 10, 10);
+        chip.drawCircle(
+          getULBetX(bet.hitArea) + radius + (circumference * chipCount),
+          getULBetY(bet.hitArea) + radius,
+          radius
+        );
         chip.endFill();
 
         bet.addChild(chip);
 
         amountText = new PIXI.Text('' + fields.amount, {font: 'bold 12px Arial'});
-        amountText.x = getULBetX(bet.hitArea) + 3;
+        amountText.x = getULBetX(bet.hitArea) + 3 + (circumference * chipCount);
         amountText.y = getULBetY(bet.hitArea) + 3;
 
         chip.addChild(amountText);

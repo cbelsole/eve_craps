@@ -90,7 +90,11 @@ Template.game.events = {
     if ($game.attr('id') != Template.game.currentGameId.get()) {
       var activeGame = Game.findOne({_id: $game.attr('id')});
 
-      if(activeGame && _.findWhere(activeGame.players, {_id: Meteor.userId()}) != null) {
+      if (Template.game.currentBetsSub) {
+        Template.game.currentBetsSub.stop();
+      }
+
+      if (activeGame && _.findWhere(activeGame.players, {_id: Meteor.userId()}) != null) {
         Template.game.currentGameId.set($game.attr('id'));
       } else {
         Game.update(
